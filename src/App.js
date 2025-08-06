@@ -1,23 +1,32 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import IngredientInput from "./components/IngredientInput";
+import { fetchRecipes } from "./api/spoonacular";
 
 function App() {
+  const [ingredients, setIngredients] = useState([]);
+  const [recipes, setRecipes] = useState([]);
+
+  const handleFetchRecipes = async () => {
+    const data = await fetchRecipes(ingredients);
+    setRecipes(data);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>What Can I Cook With This?</h1>
+      <IngredientInput ingredients={ingredients} setIngredients={setIngredients} />
+      <button onClick={handleFetchRecipes}>Find Recipes</button>
+      <div className="recipes">
+        {recipes.map((recipe) => (
+          <div key={recipe.id}>
+            <h3>{recipe.title}</h3>
+            <img src={recipe.image} alt={recipe.title} width={150} />
+            <a href={`https://spoonacular.com/recipes/${recipe.title.replace(/ /g, "-")}-${recipe.id}`} target="_blank" rel="noopener noreferrer">
+              View Recipe
+            </a>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
